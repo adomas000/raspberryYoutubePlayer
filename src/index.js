@@ -7,6 +7,8 @@ app.controller('mainCtrl', function($scope, $timeout) {
   $scope.isPlaying = false;
   $scope.isPageLoaded = true;
 
+  $scope.trackTitle = "";
+
 
   socket.on('greeting', (data) => {
     $scope.users = data;
@@ -18,6 +20,10 @@ app.controller('mainCtrl', function($scope, $timeout) {
   socket.on('userCount', (count) => {
     $scope.userCount = count;
     $scope.$applyAsync();
+  });
+
+  socket.on('trackData', (data) => {
+    $scope.trackTitle = data.title;
   });
 
   $scope.addToQueue = function() {

@@ -41,24 +41,27 @@ function initialiseEventsForUser(s) {
   })
 
   s.on('addUrl', (url) => {
-
     q.push(function (cb) {
       playMusic(url, () => cb());
     });
-
   })
 }
+
+var id = 0;
 
 function playMusic(url, done) {
   ytdl.getInfo(url, function (err, info) {
     io.emit("trackData", info);
-    var file = `./output/${info.id}.mp3`;
+    var file = `./output/${id++}.mp3`;
     var v = ytdl(url, ['-f 140']);
     v.pipe(fs.createWriteStream(file).on('finish', () => {
       player = omx(file);
+      var waitFor = info._duration_raw - 30000;
+      setTimeout(() => {
+        done();
+      }, waitFor < 1 ? 20 : waitFor);
       player.on('close', () => {
         fs.rmdirSync(file);
-        done();
       })
     }));
   });
