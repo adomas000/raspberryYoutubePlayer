@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
   <style>
     .showPageAnim {
       animation-name: showpage;
@@ -52,13 +53,19 @@
         <div class="input-group mb-3">
           <input type="text" class="form-control" ng-model="urlInput" placeholder="Youtube url" aria-label="Recipient's username" aria-describedby="basic-addon2">
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary" ng-click="play()" type="button">Play</button>
+            <button class="btn btn-outline-secondary" ng-click="addToQueue()" type="button">Add to queue</button>
           </div>
         </div>
       </div>
       <div class="offset-3 col-6 text-center">
         <b class="text-muted">{{isPlaying ? 'Playing..' : 'Nothing is playing right now'}}</b>
       </div>
+      <div class="offset-3 col-6 text-center">
+        <i class="fa fa-backward mr-1" style="cursor:pointer;" aria-hidden="true"></i>
+        <i class="fa" style="cursor:pointer;" ng-class="{'fa-pause':isPlaying, 'fa-play':!isPlaying}" ng-click="togglePlay()" aria-hidden="true"></i>
+        <i class="fa fa-forward ml-1" style="cursor:pointer;" aria-hidden="true"></i>
+      </div>
+      
     </div>
   </div>
 

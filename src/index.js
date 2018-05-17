@@ -20,9 +20,19 @@ app.controller('mainCtrl', function($scope, $timeout) {
     $scope.$applyAsync();
   });
 
-  $scope.play = function() {
+  $scope.addToQueue = function() {
     var url = $scope.urlInput;
+    if(url!='')
     socket.emit('addUrl', url);
+  }
+
+  $scope.togglePlay = function() {
+    if($scope.isPlaying) {
+      socket.emit('pauseAudio');
+    } else {
+      socket.emit('resumeAudio');
+    }
+    $scope.isPlaying = !$scope.isPlaying;
   }
   
 });

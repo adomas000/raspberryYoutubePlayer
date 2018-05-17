@@ -12,6 +12,7 @@
   "dependencies": {
     "express": "^4.16.3",
     "node-omxplayer": "^0.6.1",
+    "queue": "^4.4.2",
     "socket.io": "^2.1.0",
     "youtube-dl": "^1.12.2"
   }

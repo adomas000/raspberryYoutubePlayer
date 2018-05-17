@@ -1,11 +1,12 @@
 var express = require('express');
 var app = express();
 var server = require("http").Server(app);
-var io  = require("socket.io")(server);
+var io = require("socket.io")(server);
 var fs = require('fs');
 var path = require('path');
 var omx = require('node-omxplayer');
 var ytdl = require('youtube-dl');
+var queue = require('queue');
 
 server.listen(4321);
 
@@ -15,8 +16,14 @@ app.get('/', (req, res) => {
 })
 
 
-var clientCount = 0, userIds = [];
+var clientCount = 0,
+  userIds = [];
 var player;
+var q = queue();
+var results = [];
+q.autostart = true;
+q.concurrency = 1;
+q.timeout = 60 * 1000 * 60;
 
 io.on('connection', function (socket) {
   initialiseEventsForUser(socket);
@@ -24,21 +31,35 @@ io.on('connection', function (socket) {
 
 
 function initialiseEventsForUser(s) {
-  io.emit('greeting', Object.values(io.eio.clients).map((x)=>x.id));
+  io.emit('greeting', Object.values(io.eio.clients).map((x) => x.id));
   io.emit('userCount', io.engine.clientsCount);
 
 
   s.on('disconnect', (reason) => {
-    io.emit('greeting', Object.values(io.eio.clients).map((x)=>x.id));
+    io.emit('greeting', Object.values(io.eio.clients).map((x) => x.id));
     io.emit('userCount', io.engine.clientsCount);
   })
 
   s.on('addUrl', (url) => {
-    var v = ytdl(url, ['-f 140'], {cwd: __dirname});
-    v.pipe(fs.createWriteStream('test.mp3'));
-    // ytdl.exec(url, ['-x','--audio-format','mp3'], {}, function(err, output) {
-    //   console.log(output.join('\n'));
-    // })
-    //var player = omx(url);
+
+    q.push(function (cb) {
+      playMusic(url, () => cb());
+    });
+
   })
+}
+
+function playMusic(url, done) {
+  ytdl.getInfo(url, function (err, info) {
+    io.emit("trackData", info);
+    var file = `./output/${info.id}.mp3`;
+    var v = ytdl(url, ['-f 140']);
+    v.pipe(fs.createWriteStream(file).on('finish', () => {
+      player = omx(file);
+      player.on('close', () => {
+        fs.rmdirSync(file);
+        done();
+      })
+    }));
+  });
 }
