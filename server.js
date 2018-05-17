@@ -56,11 +56,15 @@ function playMusic(url, done) {
     var v = ytdl(url, ['-f 140']);
     v.pipe(fs.createWriteStream(file).on('finish', () => {
       player = omx(file);
-      var waitFor = info._duration_raw - 30000;
-      setTimeout(() => {
+	player.play();
+	console.log("playing " + info.title);
+      var waitFor = info._duration_raw * 1000 - 30000;
+	setTimeout(() => {
+	    console.log("Downloading next in line song");
         done();
-      }, waitFor < 1 ? 20 : waitFor);
-      player.on('close', () => {
+      }, waitFor < 1 ? 20000 : waitFor);
+	player.on('close', () => {
+	    console.log(info.title + "finished playing");
         fs.rmdirSync(file);
       })
     }));
