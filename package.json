@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
-    "socket.io": "^2.1.0"
+    "node-omxplayer": "^0.6.1",
+    "socket.io": "^2.1.0",
+    "youtube-dl": "^1.12.2"
   }
 }
