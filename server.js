@@ -47,9 +47,9 @@ function initialiseEventsForUser(s) {
     io.emit('userCount', io.engine.clientsCount);
   })
 
-    s.on('addUrl', (url) => {
+  s.on('addUrl', (url) => {
     downloadQ.push(function (cb) {
-	downloadMusic(url, () => cb());
+      downloadMusic(url, () => cb());
     });
   })
 }
@@ -59,43 +59,43 @@ var previousEnded = true;
 
 
 function downloadMusic(url, done) {
-    var obj = {
-	downloaded: false,
-	info:{},
-	filePath:null,
-	id:null,
-	done:false
-    };
-    
-	ytdl.getInfo(url, function(err, info) {
-	    obj.info = info;
-	    obj.id = info.title+'-'+id++;
-	    obj.filePath = __dirname + `/output/${obj.id}.mp3`;
-	    
-	    results[obj.id] = obj;
-	    
-	    playQ.push(function(cb){
-		playMusic(obj.id, cb);
-	    });
-	    console.log("starting download for" + obj.id);
-	    ytdl(url, ['-f 140']).pipe(fs.createWriteStream(obj.filePath)).on('finish', ()=>{
-		results[obj.id].downloaded = true;
-		console.log('download complete' + obj.info.title);
-		done();
-	    });
-	});
-	
+  var obj = {
+    downloaded: false,
+    info: {},
+    filePath: null,
+    id: null,
+    done: false
+  };
+
+  ytdl.getInfo(url, function (err, info) {
+    obj.info = info;
+    obj.id = info.title + '-' + id++;
+    obj.filePath = __dirname + `/output/${obj.id}.mp3`;
+
+    results[obj.id] = obj;
+
+    playQ.push(function (cb) {
+      playMusic(obj.id, cb);
+    });
+    console.log("[Starting download] " + obj.id);
+    ytdl(url, ['--format=18']).pipe(fs.createWriteStream(obj.filePath)).on('finish', () => {
+      results[obj.id].downloaded = true;
+      console.log('[Download complete] ' + obj.id);
+      done();
+    });
+  });
+
 }
 
 function playMusic(id, done) {
-    if(!results[id].downloaded) return setTimeout(()=>playMusic(id, done),1000);
-	player = omx(results[id].filePath);
-	//player.play();
-	console.log("playing " + results[id].id);
-	player.on('close', () => {
-	    console.log(id + "finished playing");
-            fs.unlinkSync(results[id].filePath);
-	    delete results[id];
-	    done();
-	});
-    };
+  if (!results[id].downloaded) return setTimeout(() => playMusic(id, done), 1000);
+  player = omx(results[id].filePath);
+  //player.play();
+  console.log("[Playing] " + id);
+  player.on('close', () => {
+    console.log("[Finished playing] " + id);
+    fs.unlinkSync(results[id].filePath);
+    delete results[id];
+    done();
+  });
+};
