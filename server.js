@@ -75,7 +75,7 @@ function downloadMusic(url, done) {
 
   ytdl.getInfo(url, function (err, info) {
     obj.info = info;
-    obj.id = info.title + '-' + id++;
+    obj.id = (info.title + '-' + id++).replace(/"|'|`/gi, "");
     obj.filePath = __dirname + `/output/${obj.id}.mp3`;
 
     results[obj.id] = obj;
