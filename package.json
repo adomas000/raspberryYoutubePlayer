@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
+    "fs-extra": "^6.0.1",
     "node-omxplayer": "^0.6.1",
     "queue": "^4.4.2",
     "socket.io": "^2.1.0",

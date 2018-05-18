@@ -2,19 +2,25 @@ var express = require('express');
 var app = express();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 var omx = require('node-omxplayer');
 var ytdl = require('youtube-dl');
 var queue = require('queue');
 
-server.listen(4321);
+(function lisServ(port) {
+  server.listen(port);
+  server.on('error', (e) => lisServ(++port))
+  server.on('listening', () => console.log("Started server on port " + port));
+})(4444)
+
 
 app.use(express.static('src'));
 app.get('/', (req, res) => {
   fs.createReadStream(path.join(__dirname, 'index.html')).pipe(res);
 })
 
+fs.ensureDir(path.join(__dirname, 'output'));
 
 var clientCount = 0,
   userIds = [];

@@ -1,7 +1,7 @@
 var app = angular.module("App", []);
 
 app.controller('mainCtrl', function($scope, $timeout) {
-  var socket = io('http://localhost:4321');
+  var socket = io(location.origin);
   $scope.urlInput;
   $scope.users = [];
   $scope.isPlaying = false;
