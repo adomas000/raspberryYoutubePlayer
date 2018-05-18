@@ -27,7 +27,7 @@ playQ.autostart = true;
 downloadQ.autostart = true;
 
 playQ.concurrency = 1;
-downloadQ.concurrency = 1;
+downloadQ.concurrency = 3;
 
 playQ.timeout = 60 * 1000 * 60;
 downloadQ.timeout = 60 * 1000 * 60;
