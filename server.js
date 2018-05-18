@@ -19,11 +19,18 @@ app.get('/', (req, res) => {
 var clientCount = 0,
   userIds = [];
 var player;
-var q = queue();
-var results = [];
-q.autostart = true;
-q.concurrency = 1;
-q.timeout = 60 * 1000 * 60;
+var downloadQ = queue();
+var playQ = queue();
+var results = {};
+
+playQ.autostart = true;
+downloadQ.autostart = true;
+
+playQ.concurrency = 1;
+downloadQ.concurrency = 1;
+
+playQ.timeout = 60 * 1000 * 60;
+downloadQ.timeout = 60 * 1000 * 60;
 
 io.on('connection', function (socket) {
   initialiseEventsForUser(socket);
@@ -40,33 +47,55 @@ function initialiseEventsForUser(s) {
     io.emit('userCount', io.engine.clientsCount);
   })
 
-  s.on('addUrl', (url) => {
-    q.push(function (cb) {
-      playMusic(url, () => cb());
+    s.on('addUrl', (url) => {
+    downloadQ.push(function (cb) {
+	downloadMusic(url, () => cb());
     });
   })
 }
 
 var id = 0;
+var previousEnded = true;
 
-function playMusic(url, done) {
-  ytdl.getInfo(url, function (err, info) {
-    io.emit("trackData", info);
-    var file = `./output/${id++}.mp3`;
-    var v = ytdl(url, ['-f 140']);
-    v.pipe(fs.createWriteStream(file).on('finish', () => {
-      player = omx(file);
-	player.play();
-	console.log("playing " + info.title);
-      var waitFor = info._duration_raw * 1000 - 30000;
-	setTimeout(() => {
-	    console.log("Downloading next in line song");
-        done();
-      }, waitFor < 1 ? 20000 : waitFor);
-	player.on('close', () => {
-	    console.log(info.title + "finished playing");
-        fs.rmdirSync(file);
-      })
-    }));
-  });
+
+function downloadMusic(url, done) {
+    var obj = {
+	downloaded: false,
+	info:{},
+	filePath:null,
+	id:null,
+	done:false
+    };
+    
+	ytdl.getInfo(url, function(err, info) {
+	    obj.info = info;
+	    obj.id = info.title+'-'+id++;
+	    obj.filePath = __dirname + `/output/${obj.id}.mp3`;
+	    
+	    results[obj.id] = obj;
+	    
+	    playQ.push(function(cb){
+		playMusic(obj.id, cb);
+	    });
+	    console.log("starting download for" + obj.id);
+	    ytdl(url, ['-f 140']).pipe(fs.createWriteStream(obj.filePath)).on('finish', ()=>{
+		results[obj.id].downloaded = true;
+		console.log('download complete' + obj.info.title);
+		done();
+	    });
+	});
+	
 }
+
+function playMusic(id, done) {
+    if(!results[id].downloaded) return setTimeout(()=>playMusic(id, done),1000);
+	player = omx(results[id].filePath);
+	//player.play();
+	console.log("playing " + results[id].id);
+	player.on('close', () => {
+	    console.log(id + "finished playing");
+            fs.unlinkSync(results[id].filePath);
+	    delete results[id];
+	    done();
+	});
+    };
