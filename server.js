@@ -75,18 +75,18 @@ function downloadMusic(url, done) {
 
   ytdl.getInfo(url, function (err, info) {
     obj.info = info;
-    obj.id = (info.title + '-' + id++).replace(/"|'|`/gi, "");
-    obj.filePath = __dirname + `/output/${obj.id}.mp3`;
+    obj.id = (info.id + '-' + id++)//.replace(/"|'|`|\\|\//gi, "");
+    obj.filePath = path.join(__dirname , `/output/${obj.id}.mp3`);
 
     results[obj.id] = obj;
 
     playQ.push(function (cb) {
       playMusic(obj.id, cb);
     });
-    console.log("[Starting download] " + obj.id);
+    console.log(`[Starting download] ${obj.info.title} (${obj.id})`);
     ytdl(url, ['--format=18']).pipe(fs.createWriteStream(obj.filePath)).on('finish', () => {
       results[obj.id].downloaded = true;
-      console.log('[Download complete] ' + obj.id);
+      console.log(`[Download complete] ${obj.info.title} (${obj.id})`);
       done();
     });
   });
@@ -97,9 +97,9 @@ function playMusic(id, done) {
   if (!results[id].downloaded) return setTimeout(() => playMusic(id, done), 1000);
   player = omx(results[id].filePath);
   //player.play();
-  console.log("[Playing] " + id);
+  console.log(`[Playing] ${results[id].info.title} (${id})`);
   player.on('close', () => {
-    console.log("[Finished playing] " + id);
+    console.log(`[Finished playing] ${results[id].info.title} (${id})`);
     fs.unlinkSync(results[id].filePath);
     delete results[id];
     done();
