@@ -76,7 +76,7 @@ app.controller('mainCtrl', function($scope, $timeout, $interval) {
 
 
   $scope.togglePlay = function() {
-    if($scope.isPlaying && $scope.currentSong.paused) {
+    if($scope.isPlaying && !$scope.currentSong.paused) {
       socket.emit('pauseAudio', $scope.currentSong._id);
     } else {
       socket.emit('resumeAudio', $scope.currentSong._id);
