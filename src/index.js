@@ -86,11 +86,11 @@ app.controller('mainCtrl', function($scope, $timeout, $interval) {
   }
 
   $scope.volumeUp = function() {
-    socket.emit('volumeDown');
+    socket.emit('volumeUp');
   }
 
   $scope.volumeDown = function() {
-    socket.emit('volumeUp');
+    socket.emit('volumeDown');
   }
   
 });

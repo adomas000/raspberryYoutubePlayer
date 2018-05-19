@@ -118,13 +118,25 @@ function initialiseEventsForUser(s) {
     if(player){
       player.volDown()
     }
-  })
+  });
 
   s.on('volumeUp', function () {
     if(player) {
       player.volUp()
     }
-  })
+  });
+
+  s.on('pauseAudio', function () {
+    if(player) {
+      player.pause();
+    }
+  });
+
+  s.on('resumeAudio', function () {
+    if(player) {
+      player.play();
+    }
+  });
 }
 
 var id = 0;
@@ -215,6 +227,7 @@ function playMusic(id, done) {
   logger.info(`[Playing] [In progress] ${results[id].info.title} (${results[id].id})`);
   player.on('close', () => {
     results[id].done = true;
+    results[id].playing = false;
     io.emit('isPlaying', false);
     io.emit('queueData', results);
     logger.info(`[Playing] [Completed] ${results[id].info.title} (${results[id].id})`);
