@@ -193,16 +193,16 @@ function downloadMusic(id, done) {
 function playMusic(id, done) {
   if (!results[id].downloaded) return setTimeout(() => playMusic(id, done), 500);
 
-  // if (platform == 'win32') {
-  //   results[id].done = true;
-  //   io.emit('queueData', results);
-  //   removeOldQueue();
-  //   done();
-  //   return;
-  // };
+  if (platform == 'win32') {
+    results[id].done = true;
+    io.emit('queueData', results);
+    removeOldQueue();
+    done();
+    return;
+  };
   
   try {
-    //player = omx(results[id].filePath);
+    player = omx(results[id].filePath);
     results[id].playing = true;
     streamSongProgress(id);
     io.emit('currentSong', id);
@@ -213,25 +213,25 @@ function playMusic(id, done) {
   }
   //player.play();
   logger.info(`[Playing] [In progress] ${results[id].info.title} (${results[id].id})`);
-  // player.on('close', () => {
-  //   results[id].done = true;
-  //   io.emit('isPlaying', false);
-  //   io.emit('queueData', results);
-  //   logger.info(`[Playing] [Completed] ${results[id].info.title} (${results[id].id})`);
-  //   fs.unlinkSync(results[id].filePath);
-  //   removeOldQueue();
-  //   done();
-  // });
-  setTimeout(()=>{
+  player.on('close', () => {
     results[id].done = true;
-    results[id].playing = false;
     io.emit('isPlaying', false);
     io.emit('queueData', results);
     logger.info(`[Playing] [Completed] ${results[id].info.title} (${results[id].id})`);
     fs.unlinkSync(results[id].filePath);
     removeOldQueue();
     done();
-  }, results[id].info._duration_raw * 1000);
+  });
+  // setTimeout(()=>{
+  //   results[id].done = true;
+  //   results[id].playing = false;
+  //   io.emit('isPlaying', false);
+  //   io.emit('queueData', results);
+  //   logger.info(`[Playing] [Completed] ${results[id].info.title} (${results[id].id})`);
+  //   fs.unlinkSync(results[id].filePath);
+  //   removeOldQueue();
+  //   done();
+  // }, results[id].info._duration_raw * 1000);
 };
 
 function streamSongProgress (id) {
