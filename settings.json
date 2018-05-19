@@ -1,0 +1,7 @@
+{
+  "port":80,
+  "triesToRestartScript":5,
+  "deleteFilesInOutputOnStart": true,
+  "songHistoryCount":20,
+  "debug": true
+}
