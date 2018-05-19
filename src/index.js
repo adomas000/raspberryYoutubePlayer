@@ -78,11 +78,11 @@ app.controller('mainCtrl', function($scope, $timeout, $interval) {
 
   $scope.togglePlay = function() {
     if($scope.isPlaying) {
-      socket.emit('pauseAudio');
+      socket.emit('pauseAudio', $scope.currentSong._id);
     } else {
-      socket.emit('resumeAudio');
+      socket.emit('resumeAudio', $scope.currentSong._id);
     }
-    $scope.isPlaying = !$scope.isPlaying;
+    $scope.currentSong.paused = !$scope.currentSong.paused;
   }
 
   $scope.volumeUp = function() {

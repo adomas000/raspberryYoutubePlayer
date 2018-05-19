@@ -126,15 +126,17 @@ function initialiseEventsForUser(s) {
     }
   });
 
-  s.on('pauseAudio', function () {
+  s.on('pauseAudio', function (id) {
     if(player) {
       player.pause();
+      results[id].paused = true;
     }
   });
 
-  s.on('resumeAudio', function () {
+  s.on('resumeAudio', function (id) {
     if(player) {
       player.play();
+      results[id].paused = false;
     }
   });
 }
@@ -148,6 +150,7 @@ function getInfoFromUrl(url, ip, done) {
     downloaded: false,
     gotInfo: false,
     playing: false,
+    paused: false,
     done: false,
     url: url,
     info: {},
