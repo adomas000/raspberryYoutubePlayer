@@ -54,7 +54,6 @@ app.controller('mainCtrl', function($scope, $timeout, $interval) {
     if(!playing) {
       $scope.songProgress = 0;
       songProgressSeconds = 0;
-      $interval.cancel($scope.songProgressInterval);
     }
     $scope.$applyAsync();
   })
@@ -77,7 +76,7 @@ app.controller('mainCtrl', function($scope, $timeout, $interval) {
 
 
   $scope.togglePlay = function() {
-    if($scope.isPlaying) {
+    if($scope.isPlaying && $scope.currentSong.paused) {
       socket.emit('pauseAudio', $scope.currentSong._id);
     } else {
       socket.emit('resumeAudio', $scope.currentSong._id);
