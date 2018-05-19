@@ -137,6 +137,7 @@ function initialiseEventsForUser(s) {
     if(player) {
       player.play();
       results[id].paused = false;
+      streamSongProgress(id);
     }
   });
 }
@@ -253,6 +254,9 @@ function playMusic(id, done) {
 function streamSongProgress (id) {
   setTimeout(() => {
     if(results[id].playing) {
+      if(results[id].paused) {
+        return;
+      }
       io.emit('songProgress', ++songProgressInSeconds);
       streamSongProgress(id);
     } else {

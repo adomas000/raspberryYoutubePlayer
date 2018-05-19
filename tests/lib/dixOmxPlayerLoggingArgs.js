@@ -1,4 +1,4 @@
-var fs = requier('fs-extra');
+var fs = require('fs-extra');
 var path = require('path')
 module.exports = function(done) {
   var file = path.resolve(path.join('node_modules', 'node-omxplayer', 'index.js'));

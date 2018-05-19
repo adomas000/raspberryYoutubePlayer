@@ -71,7 +71,7 @@
       </div>
       <div class="offset-3 col-6 text-center" ng-show="isPlaying">
         <i class="fa fa-backward mr-1" style="cursor:pointer;" aria-hidden="true"></i>
-        <i class="fa" style="cursor:pointer;" ng-class="{'fa-pause':currentSong.paused, 'fa-play':!currentSong.paused}" ng-click="togglePlay()" aria-hidden="true"></i>
+        <i class="fa" style="cursor:pointer;" ng-class="{'fa-pause':!currentSong.paused, 'fa-play':currentSong.paused}" ng-click="togglePlay()" aria-hidden="true"></i>
         <i class="fa fa-forward ml-1" style="cursor:pointer;" aria-hidden="true"></i>
         <span>| Volume:</span>
         <i class="fa fa-minus" style="cursor:pointer;" ng-click="volumeDown()" aria-hidden="true"></i>
