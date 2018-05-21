@@ -91,6 +91,10 @@ getInfoQ.timeout = 30000; // 30s;
 playQ.timeout = 60 * 1000 * 15;// 15min
 downloadQ.timeout = 60 * 1000 * 60;// 15min
 
+getInfoQ.on('error', (err) => {
+  logger.error(err);
+})
+
 io.on('connection', function (socket) {
   initialiseEventsForUser(socket);
 });
@@ -169,6 +173,12 @@ function getInfoFromUrl(url, ip, done) {
   io.emit('queueData', results);
   logger.info(`[Getting info] [In progress] url: ${url} id: ${obj._id}`);
   ytdl.getInfo(url, function (err, info) {
+    if(err || !info) {
+      logger.error(`[Getting info] [Error] When trying to get info from ${url}`);
+      delete results[obj._id];
+      io.emit('queueData', results);
+      return done(err);
+    }
     logger.info(`[Getting info] [Completed] url: ${url} id: ${obj._id}`);
     results[obj._id].info = info;
     results[obj._id].id = (info.id + '-' + obj._id)//.replace(/"|'|`|\\|\//gi, "");
