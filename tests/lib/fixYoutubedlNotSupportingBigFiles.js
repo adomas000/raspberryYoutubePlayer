@@ -8,6 +8,7 @@ var path = require('path');
 
 const fix = `
 // FIX EDIT : test: ${path.basename(__filename)} \n
+if(!options) options = {};\n
 options.maxBuffer = 999999 * 1024;
 `;
 
