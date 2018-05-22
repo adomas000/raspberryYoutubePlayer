@@ -3,7 +3,12 @@ var path = require('path')
 module.exports = function(done) {
   var file = path.resolve(path.join('node_modules', 'node-omxplayer', 'index.js'));
   var contents = fs.readFileSync(file, 'utf-8').split('\n');
-  if(contents[87].match(/args for omxplayer/gi)) contents[87] = ''; 
+  for(const num in contents) {
+    if(contents[num].match(/args for omxplayer/gi)){
+      contents[num] = `// DELETED LINE BY ${path.basename(__filename)}`;
+    }
+  }
+  
   fs.writeFileSync(file, contents.join('\n'));
   done();
 }
